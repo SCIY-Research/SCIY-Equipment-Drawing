@@ -1,0 +1,18 @@
+# SCIY private / commercial files
+private/
+pro/
+internal/
+secrets/
+
+# Environment
+.env
+
+# Temporary files
+tmp/
+temp/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
