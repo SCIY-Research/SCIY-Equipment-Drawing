@@ -1,3 +1,4 @@
-name: SCIY Equipment Drawing
-description: Convert a reference image of one laboratory or research device into a clean scientific illustration with line art, flat-color rendering, and a basic Adobe Illustrator vectorization workflow.
-instructions_file: SKILL.md
+interface:
+  display_name: "科研设备绘图"
+  short_description: "多候选科研设备重建、几何锁定上色与可编辑/PPT兼容矢量导出"
+  default_prompt: "使用 $equipment-image-drawing 绘制科研设备：先判断公开/自建来源并选择风格与候选数量，再选定母版、生成线稿、用 Adobe Illustrator 矢量化；确认线稿后锁定几何，只做分层上色与矢量光影，并分别验证可编辑 AI 工程文件和 PPT 兼容 SVG。"

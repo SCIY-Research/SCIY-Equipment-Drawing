@@ -1,262 +1,187 @@
 ---
-name: sciy-equipment-drawing
-description: Convert one laboratory or research-equipment reference image into a clean scientific illustration using a line-first workflow. Preserve function-critical geometry, avoid invented parts, generate line-art and flat-color outputs, and complete a basic Adobe Illustrator vectorization workflow for editable SVG/AI deliverables.
+name: equipment-image-drawing
+description: Reconstruct editable scientific-equipment illustrations from photos, papers, CAD references, or existing images using evidence-aware research, controlled AI candidate generation, geometry-locked coloring, Adobe Illustrator vectorization, and separate editable/PPT-compatible exports.
 ---
 
-# SCIY 科研设备绘制
+# SCIY Equipment Drawing v1.1
 
-## 0. Skill 目标
-把一张实验设备照片、参考图、已有设备图或论文中的设备截图，整理成：
-1. 结构可信的白底线稿图
-2. 与线稿同构的科研配色图
-3. 基于 Adobe Illustrator 的基础矢量化文件
-4. 适合论文配图、科研流程图、PPT 和 SVG 二次编辑的输出文件
+Create technically credible, editable scientific-equipment illustrations. Default to one isolated device. Do not expand into a complete experimental workflow unless the user asks for one.
 
-默认只处理 **一个独立设备**。除非用户明确要求，不自动扩展成完整实验系统图，不主动添加流程箭头、文字标签、编号、装饰背景、额外管路或其他设备。
+## Core Principle
 
-SCIY 的优先级始终是：
-**结构可信 > 轮廓清楚 > 可编辑性 > 配色丰富 > 装饰效果**
+Treat the workflow as four distinct stages:
 
-### 0.1 每次调用前先选择绘制 / 编辑软件
+1. **Understand the real device** — route the input, research only when useful, and identify geometry-critical evidence.
+2. **Generate candidate masters** — choose a visual style, generate controlled alternatives, and select one geometry authority.
+3. **Vectorize without changing identity** — line master to Illustrator, Expand to true vectors, then lock approved geometry.
+4. **Style the locked geometry** — color, shadow, highlight, and compatibility export must not silently redraw the device.
 
-每次开始一个新的设备绘制任务时，**在正式绘制前必须先询问用户希望采用哪一种软件路线**，不要默认替用户做决定。
+Read the matching reference file before each stage:
 
-建议询问：
+- [references/routing-and-research.md](references/routing-and-research.md)
+- [references/styles-and-candidates.md](references/styles-and-candidates.md)
+- [references/prompts.md](references/prompts.md)
+- [references/geometry-rules.md](references/geometry-rules.md)
+- [references/illustrator.md](references/illustrator.md)
+- [references/coloring-and-lighting.md](references/coloring-and-lighting.md)
+- [references/ppt-svg-compatibility.md](references/ppt-svg-compatibility.md)
+- [references/quality-review.md](references/quality-review.md)
 
-> 本次希望使用哪一种绘制 / 编辑路线？  
-> **A. Adobe Illustrator（强烈推荐）**  
-> B. PowerPoint / WPS Presentation  
-> C. 不调用外部绘图软件，仅输出 PNG / SVG
+## Route The Input
 
-推荐说明：
+- **Public/standard equipment:** user evidence first; official model pages, manuals, dimensions, and multi-view images may supplement missing structure.
+- **Self-built/modified equipment:** user photos, dimensions, sketches, and explanations are authoritative. Internet material may support only standard subcomponents unless the user explicitly says otherwise.
+- **Mixed system:** separate standard commercial components from custom geometry, then recombine.
+- **Existing approved line art:** treat it as the geometry authority.
 
-- **A. Adobe Illustrator（强烈推荐）**：SCIY 的首选路线。更适合线稿与配色图的矢量化、Image Trace、Expand、路径清理和 SVG / AI 导出。通常流程更直接、速度更快，自动化步骤和额外 token / 资源消耗也更少。
-- **B. PowerPoint / WPS Presentation**：适合没有 Illustrator、希望直接获得 PPT 可编辑文件的用户；但复杂设备通常需要更多对象拆分、排版和校正，整体速度较慢，自动化步骤与 token / 资源消耗通常更高。
-- **C. 仅 PNG / SVG**：适合不希望安装或调用额外软件的用户；完成线稿、配色和基础 SVG 输出，但不额外生成 AI / PPT 文件。
+Use a **soft gate**. Unless the source is genuinely unusable, continue and disclose uncertainty rather than refusing. Ask only for information that would materially improve fidelity.
 
-如果用户已经在当前任务中明确指定软件，直接遵循用户选择；否则必须先询问。
+## Visual Style And Candidate Count
 
-**默认推荐 A，但只有在用户确认后才进入对应软件路线。**
+If the user already specifies style or count, do not ask again. Otherwise offer concise choices.
 
-## 1. 输入要求
-用户可提供：实验设备实拍照片、产品参考图、论文截图、AI 生成参考图、已有设备插图或简单草图。
-优先使用清晰、主体完整可见的参考图。若关键结构模糊、遮挡严重、裁切明显、视角扭曲或说明冲突，应先指出不确定点并请求补充参考，而不是自行补造复杂结构。
+Supported v1.1 styles:
 
-## 2. 标准工作流
+1. `Academic Flat` / 论文扁平风
+2. `Product Reference` / 标准产品参考风
+3. `Technical Illustration` / 技术插画风
+4. `Lineart First` / 线稿优先风
+
+Candidate count: **1 / 2 / 4**, maximum 4.
+
+Default candidate behavior is:
+
+> same device + same chosen style + controlled variation
+
+Do not turn four candidates into four unrelated devices. If the user explicitly asks to compare styles, use Style Comparison Mode instead.
+
+Candidates are **AI master candidates**, not final AI/SVG deliverables. Normally select one candidate before vectorization.
+
+## Candidate Selection
+
+Prefer the candidate with:
+
+1. correct device identity;
+2. faithful critical structure;
+3. coherent proportions and interfaces;
+4. clean geometry suitable for line extraction;
+5. only then visual polish.
+
+Do not choose a prettier candidate that invents or removes functional parts.
+
+## Line Master And Vectorization
+
+After candidate selection:
+
+1. derive a clean line master from the selected geometry;
+2. preserve critical components, supports, interfaces, windows, controls, and functional internals;
+3. use Illustrator Black and White Image Trace with `Ignore White`, then `Expand`;
+4. validate that AI/SVG contain editable vector objects and zero embedded raster images where vector output is promised.
+
+Image Trace may produce closed filled contours rather than centerline strokes. That is acceptable. Do not spend unlimited effort converting everything to centerline strokes.
+
+## Geometry Lock
+
+Once a line/vector result is approved, it becomes the **geometry authority**.
+
+During coloring and lighting, do not:
+
+- Image Trace again;
+- Expand again;
+- Simplify approved paths;
+- regenerate the device;
+- move anchors or control handles;
+- replace approved geometry with a newly traced color image.
+
+Coloring is a **style operation**, not a geometry-generation operation.
+
+Record a geometry signature before and after coloring when practical. Use [scripts/geometry_signature.py](scripts/geometry_signature.py) for SVG-based checks.
+
+## Coloring And Lighting
+
+Preferred layer order:
+
 ```text
-参考图 / 文字描述
-  ↓
-询问并确认绘制 / 编辑软件
-  ↓
-结构识别
-  ↓
-线稿生成
-  ↓
-结构检查
-  ↓
-同构配色图
-  ↓
-按用户选择进入软件路线
-  ├─ Adobe Illustrator（强烈推荐）→ SVG / AI / PNG
-  ├─ PowerPoint / WPS → PPTX / PNG（可配合 SVG）
-  └─ 无外部软件 → PNG / SVG
-  ↓
-最终 QC
+LINEART        top, locked
+HIGHLIGHT
+SHADOW
+COLOR_BASE
 ```
 
-## 3. 结构识别
-开始绘制前，至少识别：
-- 主体轮廓、主要体块和相对比例
-- 法兰、接口、管口、阀门、观察窗、门盖、按钮、控制面板、电机壳体、支撑结构、玻璃件、镜头/物镜等关键部件
-- 参考图中清楚可见且与设备身份有关的内部构件
-- 不得随意删除、增加、移动或重排的结构
+Fill existing closed regions or geometry-matched copies. Use restrained scientific-illustration colors. Add volume with editable vector shading, not by redrawing the equipment.
 
-不得随意改动：接口数量及位置关系、法兰位置、支撑结构、主体比例、控制器与主机相对位置、关键透明部件。
+Preferred light source: upper-left unless the user specifies otherwise.
 
-## 4. 生成线稿版本
-先完成线稿，再进入配色。
+Use gradients/opacity/vector clipping only when needed. Avoid heavy blur, raster effects, or photorealistic texture in the default technical workflow.
 
-线稿要求：
-- 白色背景
-- 主体完整、居中、留边
-- 深灰或黑色轮廓线
-- 轮廓清楚、连续、克制
-- 一条主要物理边界尽量只保留一条主要线
-- 直线保持直，圆形接口尽量同心，重复件排列规律
-- 相连部件真正连接，不出现悬空接口或不合理穿插
-- 不使用阴影、渐变、反光条、排线、纸张质感或草稿感
-- 不为了“更复杂”而添加不存在的零件
+## SVG Geometry Rules
 
-避免夸张透视、过度写实纹理、复杂背景、装饰性光影和产品广告风渲染。
+Mechanical geometry should stay mechanical:
 
-## 5. 线稿结构检查
-线稿完成后检查：
-1. 是否裁切
-2. 主体轮廓是否完整
-3. 关键结构是否缺失
-4. 是否凭空增加零件
-5. 接口和连接关系是否合理
-6. 圆形、直线和重复件是否明显变形
-7. 是否仍有背景杂物
+- straight stays straight;
+- circle stays circular;
+- symmetric stays symmetric;
+- repeated fasteners should remain regular;
+- use clean arcs, circles, ellipses, rectangles, rounded rectangles, and deliberate Bézier curves;
+- avoid thick-paint tracing, duplicated black borders, wobbly edges, and unnecessary anchors.
 
-若存在明显结构错误，优先修线稿，不进入配色。
+Structure correctness outranks path-count reduction.
 
-## 6. 生成同构配色图
-配色图必须沿用已确认线稿的几何结构，不得改变视角、构图、裁切、主体轮廓、关键部件数量与位置、接口关系。
+## Two Export Targets
 
-配色原则：
-- 颜色仅用于区分材料与结构
-- 浅灰可用于金属主体，深灰用于结构件，淡蓝用于玻璃，黑/深色用于控制器或底座，少量功能色用于按钮或重点部件
-- 使用少量、平坦、容易辨认的颜色
-- 不使用复杂渐变、高光、材质贴图或过度阴影
-- 不做产品宣传海报风格
+v1.1 distinguishes two deliverables:
 
-## 7. Adobe Illustrator 基础矢量化
+### Editable Master
 
-**当用户选择 Adobe Illustrator 路线时执行本节。SCIY 强烈推荐该路线。**
+Use the `.ai` project file as the continuing-edit master. Preserve editable layers and geometry-lock evidence.
 
-完成线稿和配色图后，执行基础矢量化流程。
+### Presentation SVG
 
-### 7.1 Illustrator 检测
-优先自动检测本机 Adobe Illustrator。可自动搜索常见安装路径、读取系统安装信息，或由用户手动指定路径。
+Create a separate SVG for PowerPoint/presentation use when required. Do not overwrite the editable master.
 
-如果无法找到 Illustrator：
-1. 明确说明无法完成 Illustrator 矢量化；
-2. 保留 PNG 线稿与配色图；
-3. 告知用户后续可在 Illustrator 中继续完成。
+PowerPoint-compatible SVG should avoid relying on unsupported or fragile compositing behavior such as `mix-blend-mode: multiply`, masks, or effects that render differently in PowerPoint. Preserve the actual visible outline rather than replacing it with crude COLOR_BASE strokes.
 
-### 7.2 线稿矢量化
-1. 在 Illustrator 中导入线稿 PNG
-2. 使用黑白 Image Trace
-3. Expand
-4. 解除不必要编组
-5. 删除明显背景残留
-6. 删除孤立小噪点
-7. 检查是否仍是整张位图嵌入，而非真实路径
-8. 保存 AI
-9. 导出 SVG
-10. 如有需要导出高分辨率 PNG
+Read [references/ppt-svg-compatibility.md](references/ppt-svg-compatibility.md) before producing presentation SVG.
 
-### 7.3 配色图矢量化
-1. 导入配色 PNG
-2. 使用有限颜色 Image Trace
-3. Expand
-4. 清理明显杂点
-5. 检查主体轮廓是否保持一致
-6. 检查主要色块是否闭合、合理
-7. 保存 AI
-8. 导出 SVG
-9. 如有需要导出高分辨率 PNG
+## Non-Negotiable Invariants
 
-### 7.4 基础图层
-至少建议：
-```text
-LINEART
-COLOR
-BACKGROUND
-```
+- Preserve equipment identity and experiment-critical geometry.
+- User-supplied real-device evidence outranks generic internet references.
+- Keep the device fully visible with safe margins unless the user requests a crop.
+- Do not silently add labels, arrows, pipes, sensors, or fittings.
+- Do not mechanically delete every white fill; some encode valid structure/negative space.
+- Do not claim a centerline-stroke result unless inspection proves it.
+- Do not report success from code generation alone. Required software operations must actually run and exported previews must be inspected.
+- Never overwrite the editable engineering master with a presentation-compatibility conversion.
 
-### 7.5 Illustrator 阶段注意事项
-- 不因矢量化改变设备几何关系
-- 不因描摹严重扭曲主要结构
-- 不为减少节点破坏关键圆口、法兰或支撑
-- 不保留整张原始参考图作为最终“假矢量”
-- 不输出结构明显错误但仅形式上为 SVG 的文件
+## Recommended Naming
 
-### 7.6 PowerPoint / WPS 可选路线
+Use the actual Chinese equipment name plus role and ASCII version marker:
 
-当用户选择 PowerPoint / WPS 时，不强制调用 Illustrator。优先利用已确认的 PNG / SVG 结果建立简洁、可编辑的 PPT 页面或设备对象。
-
-该路线应说明：
-- 优点：用户更容易打开和继续修改；
-- 代价：复杂设备的对象拆分、排版和校正步骤更多，通常比 Illustrator 路线更慢，并可能消耗更多自动化步骤与 token / 计算资源；
-- 不为了“PPT 可编辑”而牺牲已经确认的设备结构。
-
-建议输出：
-```text
-设备名称_展示_v01.pptx
-```
-
-### 7.7 无外部软件路线
-
-当用户选择不调用外部绘图软件时，保留线稿与配色 PNG，并优先生成可编辑 SVG。该路线不要求 AI 或 PPTX 文件。
-
-## 8. 最终检查（Final QC）
-### 结构
-1. 设备是否完整
-2. 是否缺失关键部件
-3. 是否凭空新增关键部件
-4. 接口和连接是否合理
-5. 主体比例是否明显失真
-
-### 线稿
-6. 轮廓是否清楚
-7. 是否仍含背景杂物
-8. 是否有明显断线、重线、悬空线
-9. 直线、圆形和重复件是否明显畸变
-
-### 配色
-10. 配色图是否与线稿同构
-11. 色块是否过多、过杂
-12. 是否存在不必要阴影、渐变、广告感
-
-### 矢量
-13. SVG 是否为真实矢量路径
-14. 是否仍嵌有整张位图作为主体
-15. Illustrator 导出是否成功
-16. 文件是否能用于后续编辑
-
-若发现明显错误，优先修结构与几何，再谈美观。
-
-## 9. 推荐输出文件
 ```text
 设备名称_原始参考_v01.png
-设备名称_线稿_v01.png
-设备名称_配色_v01.png
-设备名称_线稿_v01.svg
-设备名称_配色_v01.svg
-设备名称_线稿_v01.ai
-设备名称_配色_v01.ai
-```
-可额外输出：
-```text
-设备名称_对比预览_v01.png
+设备名称_候选01_v01.png
+设备名称_选定母版_v01.png
+设备名称_线稿母版_v01.png
+设备名称_线稿_v01.ai/.svg/_预览.png
+设备名称_技术插画风_上色_v01.ai/.svg/_preview.png
+设备名称_技术插画风_上色_v01_PPT兼容.svg
 ```
 
-## 10. 命名与版本原则
-- 不覆盖原始参考图
-- 不覆盖历史版本
-- 每次修改递增版本号：v01、v02、v03
-- 若线稿修订明显，应同步更新配色版和矢量版，避免几何不一致
+Preserve user-requested filenames when explicitly provided.
 
-## 11. 适用范围
-适用于磁力搅拌器、离心机、分析天平、显微镜、旋转蒸发仪、真空泵、管式炉、反应釜、光谱仪等通用实验室设备，以及中等复杂度科研装置中的单体设备。
+## Completion Report
 
-## 12. 默认不做的事
-除非用户明确要求：
-- 不绘制整套复杂流程图
-- 不自动加文字标签
-- 不自动加箭头和说明框
-- 不自动加入人物或实验场景
-- 不自动做宣传海报排版
-- 不主动生成夸张 3D 效果
-- 不自动把多个独立设备拼成完整系统图
+Report only verified facts relevant to the requested deliverable, including where applicable:
 
-## 13. 信息不足时
-应说明哪些结构可以确定、哪些不确定、需要补充何种角度或更清晰参考。
-不得凭空补造复杂部件，不得用花哨配色掩盖结构不清。
+- source type and research decision;
+- chosen style and candidate count;
+- selected candidate and why;
+- Illustrator version and Image Trace/Expand status;
+- path/image counts and vector validation;
+- geometry-lock result;
+- coloring/shadow/highlight method;
+- editable-master vs presentation-SVG status;
+- PowerPoint appearance check, including crop, color, white seams, component connections, and full artboard.
 
-## 14. 输出风格总原则
-SCIY 的目标不是生成“看起来很炫”的图，而是生成：
-**结构可信、轮廓清楚、便于继续编辑、适合科研使用的设备插图。**
-
-## 15. Community v1.0 说明
-本 Community v1.0 公开完整基础工作流，包括：
-- 结构识别
-- 线稿绘制
-- 配色绘制
-- 基础 Adobe Illustrator 矢量化
-- 基础输出规范
-- 基础 QC
-
-暂不包含：大规模设备专用规则库、高级自动调参、复杂批处理流程、复杂对齐与修复逻辑、商业生产内部 QC、私有案例库与模板库。
+Use [scripts/audit_svg.py](scripts/audit_svg.py) for SVG audits and [scripts/geometry_signature.py](scripts/geometry_signature.py) for repeatable geometry checks.
